@@ -211,8 +211,9 @@ Deno.serve(async (req) => {
       });
 
       areaIds.forEach(id => params.append('area', id));
+      // hh.ru allows multiple employment but only one schedule
       empIds.forEach(id => params.append('employment', id));
-      scheduleIds.forEach(id => params.append('schedule', id));
+      if (scheduleIds.length > 0) params.append('schedule', scheduleIds[0]);
 
       const url = `https://api.hh.ru/vacancies?${params.toString()}`;
       const { ok, status, body } = await hhFetch(url, HH_HEADERS);
