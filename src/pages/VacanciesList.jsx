@@ -81,7 +81,17 @@ export default function VacanciesList() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-1">Вакансии</h1>
+      <div className="flex items-center justify-between mb-1">
+        <h1 className="text-2xl font-bold text-gray-900">Вакансии</h1>
+        <button
+          onClick={runScrape}
+          disabled={scraping}
+          className="flex items-center gap-2 px-4 py-2 bg-[#6c63ff] text-white text-sm font-medium rounded-xl hover:bg-[#5a52d5] transition-colors disabled:opacity-50 shadow-sm"
+        >
+          <RefreshCw className={`w-4 h-4 ${scraping ? 'animate-spin' : ''}`} />
+          {scraping ? 'Сканирование...' : 'Запустить скрейпинг'}
+        </button>
+      </div>
       <p className="text-gray-500 text-sm mb-6">{filtered.length} из {vacancies.length} вакансий</p>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 mb-4 p-4">
