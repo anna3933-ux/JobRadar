@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-d
 import { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import Layout from "@/components/Layout";
-import Dashboard from "@/pages/Dashboard";
+import Dashboard from "@/pages/Dashboard.jsx";
 import VacanciesList from "@/pages/VacanciesList";
 import VacancyDetail from "@/pages/VacancyDetail";
 import SearchSettings from "@/pages/SearchSettings";
