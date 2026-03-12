@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import Layout from "@/components/Layout";
 import Dashboard from "@/pages/Dashboard";
-import VacanciesKanban from "@/pages/VacanciesKanban";
 import VacanciesList from "@/pages/VacanciesList";
 import VacancyDetail from "@/pages/VacancyDetail";
 import SearchSettings from "@/pages/SearchSettings";
