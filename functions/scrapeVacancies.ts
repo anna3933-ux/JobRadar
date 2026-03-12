@@ -170,9 +170,15 @@ Deno.serve(async (req) => {
     // Area IDs
     const areaIds = countries.map(c => AREA_MAP[c]).filter(Boolean);
 
-    // Employment
-    const empIds = empTypes.map(e => EMP_MAP[e]).filter(Boolean);
-    const needRemote = empTypes.includes('Удалённая работа');
+    // Employment — collect employment and schedule values
+    const empIds = [];
+    const scheduleIds = [];
+    for (const et of empTypes) {
+      const mapped = EMP_MAP[et];
+      if (mapped?.employment) empIds.push(mapped.employment);
+      if (mapped?.schedule) scheduleIds.push(mapped.schedule);
+    }
+    log('info', `Employment IDs: ${empIds.join(', ') || 'none'} | Schedule IDs: ${scheduleIds.join(', ') || 'none'}`);
 
     let totalFound = 0;
     let newAdded = 0;
