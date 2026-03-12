@@ -9,7 +9,7 @@ import Dashboard from "@/pages/Dashboard";
 import VacanciesList from "@/pages/VacanciesList";
 import VacancyDetail from "@/pages/VacancyDetail";
 import SearchSettings from "@/pages/SearchSettings";
-import ScraperLogs from "@/pages/ScraperLogs";
+import ScraperLogs from "@/pages/ScraperLogs.jsx";
 
 const queryClient = new QueryClient();
 
