@@ -2,15 +2,20 @@ import { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useNavigate } from 'react-router-dom';
-import { Search, Star, ChevronUp, ChevronDown, RefreshCw } from 'lucide-react';
+import { Search, Star, ChevronUp, ChevronDown, RefreshCw, LayoutGrid, List } from 'lucide-react';
 import { toast } from 'sonner';
 import StatusBadge, { STATUS_CONFIG } from '@/components/StatusBadge';
 import { format } from 'date-fns';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import VacancyCard from '@/components/VacancyCard';
+
+const STATUSES = Object.keys(STATUS_CONFIG);
 
 export default function VacanciesList() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [scraping, setScraping] = useState(false);
+  const [view, setView] = useState('table'); // 'table' | 'kanban'
 
   const runScrape = async () => {
     setScraping(true);
@@ -79,98 +84,168 @@ export default function VacanciesList() {
     return `до ${v.salary_to.toLocaleString()} ${cur}`;
   };
 
+  const onDragEnd = async ({ draggableId, destination }) => {
+    if (!destination) return;
+    const newStatus = destination.droppableId;
+    await base44.entities.Vacancy.update(draggableId, { status: newStatus });
+    queryClient.invalidateQueries({ queryKey: ['vacancies'] });
+  };
+
+  const grouped = STATUSES.reduce((acc, s) => {
+    acc[s] = vacancies.filter(v => v.status === s);
+    return acc;
+  }, {});
+
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-1">
         <h1 className="text-2xl font-bold text-gray-900">Вакансии</h1>
-        <button
-          onClick={runScrape}
-          disabled={scraping}
-          className="flex items-center gap-2 px-4 py-2 bg-[#6c63ff] text-white text-sm font-medium rounded-xl hover:bg-[#5a52d5] transition-colors disabled:opacity-50 shadow-sm"
-        >
-          <RefreshCw className={`w-4 h-4 ${scraping ? 'animate-spin' : ''}`} />
-          {scraping ? 'Сканирование...' : 'Запустить скрейпинг'}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setView(v => v === 'table' ? 'kanban' : 'table')}
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-xl hover:bg-gray-50 transition-colors shadow-sm"
+          >
+            {view === 'table' ? (
+              <><LayoutGrid className="w-4 h-4" /> Канбан-доска</>
+            ) : (
+              <><List className="w-4 h-4" /> Табличный вид</>
+            )}
+          </button>
+          <button
+            onClick={runScrape}
+            disabled={scraping}
+            className="flex items-center gap-2 px-4 py-2 bg-[#6c63ff] text-white text-sm font-medium rounded-xl hover:bg-[#5a52d5] transition-colors disabled:opacity-50 shadow-sm"
+          >
+            <RefreshCw className={`w-4 h-4 ${scraping ? 'animate-spin' : ''}`} />
+            {scraping ? 'Сканирование...' : 'Запустить скрейпинг'}
+          </button>
+        </div>
       </div>
       <p className="text-gray-500 text-sm mb-6">{filtered.length} из {vacancies.length} вакансий</p>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 mb-4 p-4">
-        <div className="flex flex-wrap gap-3">
-          <div className="relative flex-1 min-w-48">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-[#6c63ff]"
-              placeholder="Поиск по названию или компании..."
-              value={search} onChange={e => setSearch(e.target.value)}
-            />
+      {view === 'table' && (
+        <>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 mb-4 p-4">
+            <div className="flex flex-wrap gap-3">
+              <div className="relative flex-1 min-w-48">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-[#6c63ff]"
+                  placeholder="Поиск по названию или компании..."
+                  value={search} onChange={e => setSearch(e.target.value)}
+                />
+              </div>
+              {[
+                { value: filterStatus, setter: setFilterStatus, options: Object.entries(STATUS_CONFIG).map(([k, v]) => ({ value: k, label: v.label })), placeholder: 'Статус' },
+                { value: filterPlatform, setter: setFilterPlatform, options: platforms.map(p => ({ value: p, label: p })), placeholder: 'Источник' },
+                { value: filterCountry, setter: setFilterCountry, options: countries.map(c => ({ value: c, label: c })), placeholder: 'Страна' },
+                { value: filterType, setter: setFilterType, options: types.map(t => ({ value: t, label: t })), placeholder: 'Занятость' },
+              ].map(({ value, setter, options, placeholder }) => (
+                <select
+                  key={placeholder}
+                  value={value}
+                  onChange={e => setter(e.target.value)}
+                  className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-[#6c63ff] text-gray-700 bg-white"
+                >
+                  <option value="">{placeholder}</option>
+                  {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                </select>
+              ))}
+            </div>
           </div>
-          {[
-            { value: filterStatus, setter: setFilterStatus, options: Object.entries(STATUS_CONFIG).map(([k,v]) => ({ value: k, label: v.label })), placeholder: 'Статус' },
-            { value: filterPlatform, setter: setFilterPlatform, options: platforms.map(p => ({ value: p, label: p })), placeholder: 'Источник' },
-            { value: filterCountry, setter: setFilterCountry, options: countries.map(c => ({ value: c, label: c })), placeholder: 'Страна' },
-            { value: filterType, setter: setFilterType, options: types.map(t => ({ value: t, label: t })), placeholder: 'Занятость' },
-          ].map(({ value, setter, options, placeholder }) => (
-            <select
-              key={placeholder}
-              value={value}
-              onChange={e => setter(e.target.value)}
-              className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-[#6c63ff] text-gray-700 bg-white"
-            >
-              <option value="">{placeholder}</option>
-              {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </select>
-          ))}
-        </div>
-      </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        {isLoading ? (
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12"><div className="w-8 h-8 border-4 border-gray-200 border-t-[#6c63ff] rounded-full animate-spin" /></div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
+                    <tr>
+                      <th className="px-5 py-3 text-left w-8"></th>
+                      <th className="px-5 py-3 text-left">Вакансия</th>
+                      <th className="px-5 py-3 text-left">Статус</th>
+                      <th className="px-5 py-3 text-left cursor-pointer hover:text-gray-700" onClick={() => toggleSort('salary')}>
+                        <div className="flex items-center gap-1">Зарплата <SortIcon field="salary" /></div>
+                      </th>
+                      <th className="px-5 py-3 text-left">Источник</th>
+                      <th className="px-5 py-3 text-left">Страна</th>
+                      <th className="px-5 py-3 text-left cursor-pointer hover:text-gray-700" onClick={() => toggleSort('published_at')}>
+                        <div className="flex items-center gap-1">Дата <SortIcon field="published_at" /></div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {filtered.map(v => (
+                      <tr key={v.id} onClick={() => navigate(`/VacancyDetail?id=${v.id}`)} className="hover:bg-gray-50 cursor-pointer transition-colors">
+                        <td className="px-5 py-3">
+                          {v.is_favorite && <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />}
+                        </td>
+                        <td className="px-5 py-3">
+                          <p className="font-medium text-gray-900 line-clamp-1">{v.title}</p>
+                          {v.company && <p className="text-xs text-gray-500">{v.company}</p>}
+                        </td>
+                        <td className="px-5 py-3"><StatusBadge status={v.status} /></td>
+                        <td className="px-5 py-3 text-gray-700 whitespace-nowrap">{salary(v)}</td>
+                        <td className="px-5 py-3 text-gray-500">{v.source_platform || '—'}</td>
+                        <td className="px-5 py-3 text-gray-500">{v.country || '—'}</td>
+                        <td className="px-5 py-3 text-gray-400 whitespace-nowrap">
+                          {v.published_at ? format(new Date(v.published_at), 'dd.MM.yy') : '—'}
+                        </td>
+                      </tr>
+                    ))}
+                    {filtered.length === 0 && (
+                      <tr><td colSpan={7} className="text-center py-12 text-gray-400">Вакансии не найдены</td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
+      {view === 'kanban' && (
+        isLoading ? (
           <div className="flex items-center justify-center py-12"><div className="w-8 h-8 border-4 border-gray-200 border-t-[#6c63ff] rounded-full animate-spin" /></div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
-                <tr>
-                  <th className="px-5 py-3 text-left w-8"></th>
-                  <th className="px-5 py-3 text-left">Вакансия</th>
-                  <th className="px-5 py-3 text-left">Статус</th>
-                  <th className="px-5 py-3 text-left cursor-pointer hover:text-gray-700" onClick={() => toggleSort('salary')}>
-                    <div className="flex items-center gap-1">Зарплата <SortIcon field="salary" /></div>
-                  </th>
-                  <th className="px-5 py-3 text-left">Источник</th>
-                  <th className="px-5 py-3 text-left">Страна</th>
-                  <th className="px-5 py-3 text-left cursor-pointer hover:text-gray-700" onClick={() => toggleSort('published_at')}>
-                    <div className="flex items-center gap-1">Дата <SortIcon field="published_at" /></div>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {filtered.map(v => (
-                  <tr key={v.id} onClick={() => navigate(`/VacancyDetail?id=${v.id}`)} className="hover:bg-gray-50 cursor-pointer transition-colors">
-                    <td className="px-5 py-3">
-                      {v.is_favorite && <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />}
-                    </td>
-                    <td className="px-5 py-3">
-                      <p className="font-medium text-gray-900 line-clamp-1">{v.title}</p>
-                      {v.company && <p className="text-xs text-gray-500">{v.company}</p>}
-                    </td>
-                    <td className="px-5 py-3"><StatusBadge status={v.status} /></td>
-                    <td className="px-5 py-3 text-gray-700 whitespace-nowrap">{salary(v)}</td>
-                    <td className="px-5 py-3 text-gray-500">{v.source_platform || '—'}</td>
-                    <td className="px-5 py-3 text-gray-500">{v.country || '—'}</td>
-                    <td className="px-5 py-3 text-gray-400 whitespace-nowrap">
-                      {v.published_at ? format(new Date(v.published_at), 'dd.MM.yy') : '—'}
-                    </td>
-                  </tr>
-                ))}
-                {filtered.length === 0 && (
-                  <tr><td colSpan={7} className="text-center py-12 text-gray-400">Вакансии не найдены</td></tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+          <DragDropContext onDragEnd={onDragEnd}>
+            <div className="flex gap-4 overflow-x-auto pb-4">
+              {STATUSES.map(status => (
+                <div key={status} className="flex-shrink-0 w-64">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-semibold text-gray-700">{STATUS_CONFIG[status].label}</span>
+                    <span className="text-xs bg-gray-100 text-gray-500 rounded-full px-2 py-0.5 font-medium">{grouped[status].length}</span>
+                  </div>
+                  <Droppable droppableId={status}>
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                        className={`min-h-32 rounded-xl p-2 space-y-2 transition-colors ${snapshot.isDraggingOver ? 'bg-[#6c63ff]/5 border-2 border-dashed border-[#6c63ff]/30' : 'bg-gray-100/50'}`}
+                      >
+                        {grouped[status].map((vacancy, index) => (
+                          <Draggable key={vacancy.id} draggableId={vacancy.id} index={index}>
+                            {(provided) => (
+                              <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                                <VacancyCard vacancy={vacancy} />
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                        {grouped[status].length === 0 && (
+                          <p className="text-xs text-gray-400 text-center py-4">Пусто</p>
+                        )}
+                      </div>
+                    )}
+                  </Droppable>
+                </div>
+              ))}
+            </div>
+          </DragDropContext>
+        )
+      )}
     </div>
   );
 }
