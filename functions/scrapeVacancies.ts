@@ -199,7 +199,7 @@ Deno.serve(async (req) => {
 
       areaIds.forEach(id => params.append('area', id));
       empIds.forEach(id => params.append('employment', id));
-      if (needRemote) params.append('schedule', 'remote');
+      scheduleIds.forEach(id => params.append('schedule', id));
 
       const url = `https://api.hh.ru/vacancies?${params.toString()}`;
       const { ok, status, body } = await hhFetch(url, HH_HEADERS);
