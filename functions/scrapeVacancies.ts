@@ -278,6 +278,8 @@ Deno.serve(async (req) => {
         existingUrls.add(item.alternate_url);
         newAdded++;
         newVacanciesForNotify.push(vacancy);
+        // Small delay to avoid Base44 rate limits
+        await new Promise(r => setTimeout(r, 80));
       }
     }
 
