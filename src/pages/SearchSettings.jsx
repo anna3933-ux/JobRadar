@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { X, Plus } from 'lucide-react';
+import { X } from 'lucide-react';
 import { toast } from 'sonner';
 
 const PLATFORMS = ['hh.ru', 'Хабр Карьера', 'headhunter.by', 'rabota.by', 'MyJob.ge', 'hh.uz', 'superjob.uz'];
@@ -35,7 +35,7 @@ const TagInput = ({ value = [], onChange, placeholder }) => {
   );
 };
 
-const Checkbox = ({ label, checked, onChange }) => (
+const Toggle = ({ label, checked, onChange }) => (
   <label className="flex items-center gap-2 cursor-pointer">
     <div onClick={onChange} className={`w-10 h-5 rounded-full transition-colors ${checked ? 'bg-[#6c63ff]' : 'bg-gray-200'} relative`}>
       <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${checked ? 'translate-x-5' : 'translate-x-0.5'}`} />
@@ -60,7 +60,7 @@ export default function SearchSettings() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (config) setForm({ ...form, ...config });
+    if (config) setForm(f => ({ ...f, ...config }));
   }, [config]);
 
   const set = (key, val) => setForm(f => ({ ...f, [key]: val }));
@@ -170,35 +170,27 @@ export default function SearchSettings() {
             </div>
             <div className="flex flex-col gap-3 pt-1">
               <div className="space-y-2">
-                <Checkbox label="Уведомления в Telegram" checked={form.notify_telegram} onChange={() => set('notify_telegram', !form.notify_telegram)} />
+                <Toggle label="Уведомления в Telegram" checked={form.notify_telegram} onChange={() => set('notify_telegram', !form.notify_telegram)} />
                 {form.notify_telegram && (
                   <div className="ml-12 space-y-2">
                     <div>
                       <label className="text-xs text-gray-500 mb-1 block">Токен Telegram-бота</label>
-                      <input
-                        type="text"
-                        placeholder="1234567890:ABCdef..."
-                        value={form.telegram_bot_token || ''}
+                      <input type="text" placeholder="1234567890:ABCdef..." value={form.telegram_bot_token || ''}
                         onChange={e => set('telegram_bot_token', e.target.value)}
-                        className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-[#6c63ff]"
-                      />
+                        className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-[#6c63ff]" />
                     </div>
                     <div>
                       <label className="text-xs text-gray-500 mb-1 block">Chat ID</label>
-                      <input
-                        type="text"
-                        placeholder="-100123456789 или @username"
-                        value={form.telegram_chat_id || ''}
+                      <input type="text" placeholder="-100123456789 или @username" value={form.telegram_chat_id || ''}
                         onChange={e => set('telegram_chat_id', e.target.value)}
-                        className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-[#6c63ff]"
-                      />
+                        className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-[#6c63ff]" />
                       <p className="text-xs text-gray-400 mt-1">Получить Chat ID можно через @userinfobot в Telegram</p>
                     </div>
                   </div>
                 )}
               </div>
-              <Checkbox label="Уведомления на Email" checked={form.notify_email} onChange={() => set('notify_email', !form.notify_email)} />
-              <Checkbox label="Поиск активен" checked={form.is_active} onChange={() => set('is_active', !form.is_active)} />
+              <Toggle label="Уведомления на Email" checked={form.notify_email} onChange={() => set('notify_email', !form.notify_email)} />
+              <Toggle label="Поиск активен" checked={form.is_active} onChange={() => set('is_active', !form.is_active)} />
             </div>
           </div>
         </div>
