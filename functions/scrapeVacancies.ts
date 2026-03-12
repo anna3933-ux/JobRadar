@@ -231,7 +231,14 @@ Deno.serve(async (req) => {
       log('info', `Found ${items.length} items for keyword "${keyword}" (total pages: ${body?.pages})`);
       totalFound += items.length;
 
+      // Cap new vacancies per run to avoid rate limits on cold start
+      const MAX_NEW_PER_RUN = 50;
+
       for (const item of items) {
+        if (newAdded >= MAX_NEW_PER_RUN) {
+          log('info', `  Reached MAX_NEW_PER_RUN=${MAX_NEW_PER_RUN} — stopping for this keyword`);
+          break;
+        }
         const hash = `hh_${item.id}`;
 
         if (existingHashes.has(hash)) {
