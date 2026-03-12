@@ -46,13 +46,27 @@ const AREA_MAP = {
   'Кипр': '1012',   'Cyprus': '1012',
 };
 
-// Map Russian employment type names → hh.ru employment IDs
+// Map employment type names → hh.ru employment IDs
+// hh.ru employment values: full, part, project, volunteer, probation
+// hh.ru schedule values: fullDay, shift, flexible, remote, flyInFlyOut
 const EMP_MAP = {
-  'Полная занятость': 'full',
-  'Частичная занятость': 'part',
-  'Удалённая работа': 'full',   // hh.ru uses schedule=remote for this
-  'Стажировка': 'probation',
-  'Проектная работа': 'project',
+  // Russian UI values
+  'Полная занятость': { employment: 'full' },
+  'Частичная занятость': { employment: 'part' },
+  'Удалённая работа': { schedule: 'remote' },
+  'Стажировка': { employment: 'probation' },
+  'Проектная работа': { employment: 'project' },
+  // English UI values (from SearchSettings)
+  'remote': { schedule: 'remote' },
+  'Remote': { schedule: 'remote' },
+  'hybrid': { schedule: 'flexible' },
+  'Hybrid': { schedule: 'flexible' },
+  'office': { employment: 'full' },
+  'Office': { employment: 'full' },
+  'full-time': { employment: 'full' },
+  'part-time': { employment: 'part' },
+  'contract': { employment: 'project' },
+  'internship': { employment: 'probation' },
 };
 
 const HH_HEADERS = {
