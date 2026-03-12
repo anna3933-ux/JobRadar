@@ -169,7 +169,34 @@ export default function SearchSettings() {
               </div>
             </div>
             <div className="flex flex-col gap-3 pt-1">
-              <Checkbox label="Уведомления в Telegram" checked={form.notify_telegram} onChange={() => set('notify_telegram', !form.notify_telegram)} />
+              <div className="space-y-2">
+                <Checkbox label="Уведомления в Telegram" checked={form.notify_telegram} onChange={() => set('notify_telegram', !form.notify_telegram)} />
+                {form.notify_telegram && (
+                  <div className="ml-12 space-y-2">
+                    <div>
+                      <label className="text-xs text-gray-500 mb-1 block">Токен Telegram-бота</label>
+                      <input
+                        type="text"
+                        placeholder="1234567890:ABCdef..."
+                        value={form.telegram_bot_token || ''}
+                        onChange={e => set('telegram_bot_token', e.target.value)}
+                        className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-[#6c63ff]"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500 mb-1 block">Chat ID</label>
+                      <input
+                        type="text"
+                        placeholder="-100123456789 или @username"
+                        value={form.telegram_chat_id || ''}
+                        onChange={e => set('telegram_chat_id', e.target.value)}
+                        className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-[#6c63ff]"
+                      />
+                      <p className="text-xs text-gray-400 mt-1">Получить Chat ID можно через @userinfobot в Telegram</p>
+                    </div>
+                  </div>
+                )}
+              </div>
               <Checkbox label="Уведомления на Email" checked={form.notify_email} onChange={() => set('notify_email', !form.notify_email)} />
               <Checkbox label="Поиск активен" checked={form.is_active} onChange={() => set('is_active', !form.is_active)} />
             </div>
