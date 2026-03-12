@@ -161,10 +161,20 @@ Deno.serve(async (req) => {
 
     // Build base query params
     const baseParams = {};
+    // hh.ru salary filter only works reliably with RUR currency
+    // For other currencies we skip the salary filter (hh.ru converts internally but it's unreliable)
     if (config.salary_from) {
-      baseParams.salary = String(config.salary_from);
-      baseParams.currency = (config.salary_currency || 'RUR').replace('RUB', 'RUR');
-      baseParams.only_with_salary = 'false';
+      const cur = (config.salary_currency || 'RUB').toUpperCase();
+      const hhCur = cur === 'RUB' ? 'RUR' : cur; // hh.ru uses RUR not RUB
+      const supportedCurrencies = ['RUR', 'USD', 'EUR', 'UAH', 'KZT', 'AZN', 'BYR', 'GEL', 'KGS', 'UZS'];
+      if (supportedCurrencies.includes(hhCur)) {
+        baseParams.salary = String(config.salary_from);
+        baseParams.currency = hhCur;
+        baseParams.only_with_salary = 'false';
+        log('info', `Salary filter: ${config.salary_from} ${hhCur}`);
+      } else {
+        log('warn', `Currency ${cur} not supported by hh.ru filter — skipping salary filter`);
+      }
     }
 
     // Area IDs
