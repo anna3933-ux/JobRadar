@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ТЗ — JobRadar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #222638;
+      --border: #2e3249;
+      --accent: #6c63ff;
+      --accent2: #4ecdc4;
+      --accent3: #ff6b6b;
+      --accent4: #ffd93d;
+      --text: #e8eaf6;
+      --muted: #7b82a8;
+      --tag-bg: #1e2138;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 0 16px 80px;
+    }
+
+    /* HERO */
+    .hero {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 60px 0 40px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #6c63ff22, #4ecdc422);
+      border: 1px solid #6c63ff44;
+      color: var(--accent2);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 700;
+      background: linear-gradient(135deg, #e8eaf6 30%, #6c63ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+    .hero p {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 560px;
+      margin: 0 auto 32px;
+    }
+    .hero-meta {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .hero-meta span {
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .hero-meta .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    /* LAYOUT */
+    .container { max-width: 860px; margin: 0 auto; }
+
+    /* SECTION */
+    .section {
+      margin-bottom: 40px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .section-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .section-header h2 {
+      font-size: 20px;
+      font-weight: 600;
+    }
+    .section-num {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 400;
+      margin-left: 8px;
+    }
+
+    /* CARD */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+
+    /* ANALOGS */
+    .analogs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .analog-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .analog-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+    .analog-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .analog-card:nth-child(1)::before { background: linear-gradient(90deg, #6c63ff, #4ecdc4); }
+    .analog-card:nth-child(2)::before { background: linear-gradient(90deg, #4ecdc4, #ffd93d); }
+    .analog-card:nth-child(3)::before { background: linear-gradient(90deg, #ff6b6b, #ffd93d); }
+    .analog-name {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .analog-url {
+      font-size: 12px;
+      color: var(--accent2);
+      margin-bottom: 12px;
+    }
+    .analog-features {
+      list-style: none;
+    }
+    .analog-features li {
+      font-size: 13px;
+      color: var(--muted);
+      padding: 3px 0;
+      display: flex;
+      gap: 8px;
+    }
+    .analog-features li::before { content: '→'; color: var(--accent); }
+
+    /* TABLE */
+    .params-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .params-table th {
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .params-table td {
+      padding: 12px 16px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .params-table tr:last-child td { border-bottom: none; }
+    .params-table tr:hover td { background: var(--surface2); }
+    .params-table td:first-child { font-weight: 500; color: var(--text); white-space: nowrap; }
+    .params-table td:last-child { color: var(--muted); }
+
+    /* KANBAN STATUSES */
+    .statuses {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .status-tag {
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid;
+    }
+    .status-new { background: #6c63ff18; border-color: #6c63ff44; color: #a89eff; }
+    .status-review { background: #4ecdc418; border-color: #4ecdc444; color: #4ecdc4; }
+    .status-applied { background: #ffd93d18; border-color: #ffd93d44; color: #ffd93d; }
+    .status-interview { background: #ff9f4318; border-color: #ff9f4344; color: #ff9f43; }
+    .status-offer { background: #26de8118; border-color: #26de8144; color: #26de81; }
+    .status-rejected { background: #ff6b6b18; border-color: #ff6b6b44; color: #ff6b6b; }
+    .status-archive { background: #7b82a818; border-color: #7b82a844; color: #7b82a8; }
+
+    /* ENTITY BLOCKS */
+    .entity {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .entity-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+    }
+    .entity-title {
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'Courier New', monospace;
+      color: var(--accent2);
+    }
+    .entity-badge {
+      font-size: 11px;
+      background: var(--accent)22;
+      border: 1px solid var(--accent)44;
+      color: var(--accent);
+      padding: 2px 8px;
+      border-radius: 100px;
+    }
+    .entity-fields {
+      padding: 16px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .field-tag {
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-family: 'Courier New', monospace;
+      color: var(--muted);
+    }
+    .field-tag .type { color: var(--accent)99; font-size: 11px; }
+
+    /* PAGES GRID */
+    .pages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .page-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .page-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .page-num { font-size: 24px; font-weight: 700; color: var(--accent)44; margin-bottom: 8px; }
+    .page-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .page-desc { font-size: 12px; color: var(--muted); }
+
+    /* INTEGRATIONS */
+    .integrations-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .integration-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+    }
+    .integration-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .integration-name { font-size: 14px; font-weight: 600; }
+    .integration-desc { font-size: 13px; color: var(--muted); }
+
+    /* MVP BADGES */
+    .mvp-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .mvp-box {
+      border-radius: 14px;
+      padding: 20px;
+      border: 1px solid;
+    }
+    .mvp-box.mvp {
+      background: #6c63ff0d;
+      border-color: #6c63ff33;
+    }
+    .mvp-box.full {
+      background: #4ecdc40d;
+      border-color: #4ecdc433;
+    }
+    .mvp-box h4 {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+    }
+    .mvp-box.mvp h4 { color: #a89eff; }
+    .mvp-box.full h4 { color: #4ecdc4; }
+    .mvp-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .mvp-list li {
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+    .mvp-list li::before { content: '✓'; flex-shrink: 0; }
+    .mvp-box.mvp .mvp-list li::before { color: #a89eff; }
+    .mvp-box.full .mvp-list li::before { color: #4ecdc4; }
+
+    /* DIVIDER */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 40px 0;
+    }
+
+    /* PLATFORMS */
+    .platforms-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .platform-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .platform-pill .flag { font-size: 16px; }
+
+    @media (max-width: 600px) {
+      .mvp-grid { grid-template-columns: 1fr; }
+      .params-table td:first-child { white-space: normal; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">Техническое задание</div>
+  <h1>JobRadar</h1>
+  <p>Персональный агрегатор вакансий с автоматическим скрапингом по СНГ и ближнему зарубежью</p>
+  <div class="hero-meta">
+    <span><span class="dot"></span>Платформа: Base44</span>
+    <span><span class="dot" style="background:#4ecdc4"></span>Дата: 12 марта 2026</span>
+    <span><span class="dot" style="background:#ffd93d"></span>Автор: Илья</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 1. АНАЛОГИ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:#6c63ff18">🔍</div>
+      <h2>Изученные аналоги <span class="section-num">§1</span></h2>
+    </div>
+    <div class="analogs-grid">
+      <div class="analog-card">
+        <div class="analog-name">Huntr</div>
+        <div class="analog-url">huntr.co</div>
+        <ul class="analog-features">
+          <li>Kanban-трекер заявок</li>
+          <li>AI резюме-билдер</li>
+          <li>Chrome extension</li>
+          <li>Follow-up менеджер</li>
+          <li>Трекер контактов</li>
+        </ul>
+      </div>
+      <div class="analog-card">
+        <div class="analog-name">Teal</div>
+        <div class="analog-url">tealhq.com</div>
+        <ul class="analog-features">
+          <li>Job tracker + CRM</li>
+          <li>Resume keyword analyzer</li>
+          <li>Chrome extension</li>
+          <li>Job match scoring</li>
+          <li>Структурированные поля</li>
+        </ul>
+      </div>
+      <div class="analog-card">
+        <div class="analog-name">Eztrackr</div>
+        <div class="analog-url">eztrackr.app</div>
+        <ul class="analog-features">
+          <li>Kanban board</li>
+          <li>AI cover letter</li>
+          <li>Skill match</li>
+          <li>Статистика воронки</li>
+          <li>Импорт из таблиц</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- 2. НАСТРОЙКИ ПОИСКА -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:#4ecdc418">⚙️</div>
+      <h2>Модуль «Настройки поиска» <span class="section-num">§3.1</span></h2>
+    </div>
+    <div class="card">
+      <table class="params-table">
+        <thead>
+          <tr>
+            <th>Параметр</th>
+            <th>Описание</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Ключевые слова</td><td>Список фраз — «IT Project Manager», «Product Manager» и др.</td></tr>
+          <tr><td>Исключения</td><td>Слова, которых не должно быть в вакансии</td></tr>
+          <tr><td>Сферы</td><td>Мультиселект: IT, Product, PM, другое</td></tr>
+          <tr><td>Страны / регионы</td><td>Грузия, Узбекистан, Беларусь, Кипр, Армения, Россия</td></tr>
+          <tr><td>Платформы</td><td>hh.ru, Хабр Карьера, MyJob.ge, headhunter.by, jobbank.am и др.</td></tr>
+          <tr><td>Тип занятости</td><td>Удалёнка / офис / гибрид / полная / частичная</td></tr>
+          <tr><td>Зарплатная вилка</td><td>От / до, валюта</td></tr>
+          <tr><td>Частота сканирования</td><td>Каждые X часов / раз в день / по запросу</td></tr>
+          <tr><td>Уведомления</td><td>Telegram / email при появлении новых вакансий</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 3. ВАКАНСИИ — KANBAN -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:#ffd93d18">📋</div>
+      <h2>Модуль «Вакансии» — Kanban <span class="section-num">§3.2</span></h2>
+    </div>
+    <div class="card">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Статусы карточек (drag & drop):</p>
+      <div class="statuses">
+        <span class="status-tag status-new">🆕 Новая</span>
+        <span class="status-tag status-review">👁 Изучена</span>
+        <span class="status-tag status-applied">📨 Отклик отправлен</span>
+        <span class="status-tag status-interview">🎤 Интервью</span>
+        <span class="status-tag status-offer">🏆 Оффер</span>
+        <span class="status-tag status-rejected">❌ Отказ</span>
+        <span class="status-tag status-archive">📦 Архив</span>
+      </div>
+      <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);">
+        <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Карточка вакансии содержит:</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <span class="field-tag">Название + компания</span>
+          <span class="field-tag">Локация + зарплата</span>
+          <span class="field-tag">Источник + ссылка</span>
+          <span class="field-tag">Дата публикации</span>
+          <span class="field-tag">Теги / метки</span>
+          <span class="field-tag">Заметки</span>
+          <span class="field-tag">История статусов</span>
+          <span class="field-tag">⭐ Избранное</span>
+          <span class="field-tag">🔁 Дедупликация</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. ПЛАТФОРМЫ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:#ff6b6b18">🌍</div>
+      <h2>Поддерживаемые платформы <span class="section-num">§3.3</span></h2>
+    </div>
+    <div class="card">
+      <div class="platforms-grid">
+        <div class="platform-pill"><span class="flag">🇷🇺</span> hh.ru</div>
+        <div class="platform-pill"><span class="flag">🇷🇺</span> Хабр Карьера</div>
+        <div class="platform-pill"><span class="flag">🇧🇾</span> headhunter.by</div>
+        <div class="platform-pill"><span class="flag">🇧🇾</span> rabota.by</div>
+        <div class="platform-pill"><span class="flag">🇬🇪</span> MyJob.ge</div>
+        <div class="platform-pill"><span class="flag">🇦🇲</span> Jobbank.am</div>
+        <div class="platform-pill"><span class="flag">🇦🇲</span> Armenian.job</div>
+        <div class="platform-pill"><span class="flag">🇺🇿</span> hh.uz</div>
+        <div class="platform-pill"><span class="flag">🇺🇿</span> superjob.uz</div>
+        <div class="platform-pill"><span class="flag">🇨🇾</span> Кипр (basis)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. СТРУКТУРА ДАННЫХ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:#a89eff18">🗄️</div>
+      <h2>Структура данных (Entities) <span class="section-num">§5</span></h2>
+    </div>
+
+    <div class="entity">
+      <div class="entity-header">
+        <span class="entity-title">SearchConfig</span>
+        <span class="entity-badge">настройки поиска</span>
+      </div>
+      <div class="entity-fields">
+        <span class="field-tag">keywords <span class="type">string[]</span></span>
+        <span class="field-tag">exclude_keywords <span class="type">string[]</span></span>
+        <span class="field-tag">spheres <span class="type">string[]</span></span>
+        <span class="field-tag">countries <span class="type">string[]</span></span>
+        <span class="field-tag">platforms <span class="type">string[]</span></span>
+        <span class="field-tag">employment_type <span class="type">string[]</span></span>
+        <span class="field-tag">salary_from <span class="type">number</span></span>
+        <span class="field-tag">salary_to <span class="type">number</span></span>
+        <span class="field-tag">salary_currency <span class="type">string</span></span>
+        <span class="field-tag">scan_interval_hours <span class="type">number</span></span>
+        <span class="field-tag">notify_telegram <span class="type">boolean</span></span>
+        <span class="field-tag">notify_email <span class="type">boolean</span></span>
+        <span class="field-tag">is_active <span class="type">boolean</span></span>
+      </div>
+    </div>
+
+    <div class="entity">
+      <div class="entity-header">
+        <span class="entity-title">Vacancy</span>
+        <span class="entity-badge">вакансия</span>
+      </div>
+      <div class="entity-fields">
+        <span class="field-tag">title <span class="type">string</span></span>
+        <span class="field-tag">company <span class="type">string</span></span>
+        <span class="field-tag">location <span class="type">string</span></span>
+        <span class="field-tag">salary_from <span class="type">number</span></span>
+        <span class="field-tag">salary_to <span class="type">number</span></span>
+        <span class="field-tag">salary_currency <span class="type">string</span></span>
+        <span class="field-tag">source_platform <span class="type">string</span></span>
+        <span class="field-tag">source_url <span class="type">string</span></span>
+        <span class="field-tag">published_at <span class="type">date</span></span>
+        <span class="field-tag">description <span class="type">string</span></span>
+        <span class="field-tag">status <span class="type">enum</span></span>
+        <span class="field-tag">is_favorite <span class="type">boolean</span></span>
+        <span class="field-tag">tags <span class="type">string[]</span></span>
+        <span class="field-tag">notes <span class="type">string</span></span>
+        <span class="field-tag">hash <span class="type">string</span></span>
+      </div>
+    </div>
+
+    <div class="entity">
+      <div class="entity-header">
+        <span class="entity-title">ScraperLog</span>
+        <span class="entity-badge">лог запусков</span>
+      </div>
+      <div class="entity-fields">
+        <span class="field-tag">started_at <span class="type">datetime</span></span>
+        <span class="field-tag">finished_at <span class="type">datetime</span></span>
+        <span class="field-tag">platform <span class="type">string</span></span>
+        <span class="field-tag">total_found <span class="type">number</span></span>
+        <span class="field-tag">new_added <span class="type">number</span></span>
+        <span class="field-tag">status <span class="type">enum</span></span>
+        <span class="field-tag">error_message <span class="type">string</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. СТРАНИЦЫ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:#26de8118">🖥️</div>
+      <h2>Экраны приложения <span class="section-num">§6</span></h2>
+    </div>
+    <div class="pages-grid">
+      <div class="page-card">
+        <div class="page-num">01</div>
+        <div class="page-name">Dashboard</div>
+        <div class="page-desc">Сводка: новые вакансии, воронка, последний запуск</div>
+      </div>
+      <div class="page-card">
+        <div class="page-num">02</div>
+        <div class="page-name">Vacancies Kanban</div>
+        <div class="page-desc">Доска по статусам с drag & drop</div>
+      </div>
+      <div class="page-card">
+        <div class="page-num">03</div>
+        <div class="page-name">Vacancies List</div>
+        <div class="page-desc">Таблица с фильтрами, поиском, сортировкой</div>
+      </div>
+      <div class="page-card">
+        <div class="page-num">04</div>
+        <div class="page-name">Vacancy Detail</div>
+        <div class="page-desc">Карточка + заметки + история изменений</div>
+      </div>
+      <div class="page-card">
+        <div class="page-num">05</div>
+        <div class="page-name">Search Settings</div>
+        <div class="page-desc">Форма параметров поиска</div>
+      </div>
+      <div class="page-card">
+        <div class="page-num">06</div>
+        <div class="page-name">Scraper Logs</div>
+        <div class="page-desc">История запусков агента</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. ИНТЕГРАЦИИ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:#ff9f4318">🔌</div>
+      <h2>Интеграции <span class="section-num">§7</span></h2>
+    </div>
+    <div class="integrations-list">
+      <div class="integration-item">
+        <div class="integration-icon" style="background:#229ed918">📱</div>
+        <div>
+          <div class="integration-name">Telegram Bot</div>
+          <div class="integration-desc">Уведомления о новых вакансиях в реальном времени</div>
+        </div>
+      </div>
+      <div class="integration-item">
+        <div class="integration-icon" style="background:#ff6b6b18">🔴</div>
+        <div>
+          <div class="integration-name">hh.ru API</div>
+          <div class="integration-desc">Официальный API для получения вакансий</div>
+        </div>
+      </div>
+      <div class="integration-item">
+        <div class="integration-icon" style="background:#6c63ff18">🕷️</div>
+        <div>
+          <div class="integration-name">Web Scraping</div>
+          <div class="integration-desc">Для платформ без публичного API</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. MVP vs FULL -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:#ffd93d18">🚀</div>
+      <h2>MVP vs Full версия <span class="section-num">§8</span></h2>
+    </div>
+    <div class="mvp-grid">
+      <div class="mvp-box mvp">
+        <h4>🟣 MVP — первая итерация</h4>
+        <ul class="mvp-list">
+          <li>hh.ru + Хабр Карьера</li>
+          <li>Kanban + List view</li>
+          <li>Базовые настройки поиска</li>
+          <li>Telegram уведомления</li>
+          <li>Базовая статистика</li>
+        </ul>
+      </div>
+      <div class="mvp-box full">
+        <h4>🟢 Full — полная версия</h4>
+        <ul class="mvp-list">
+          <li>Все 10+ платформ</li>
+          <li>Расширенная аналитика</li>
+          <li>Экспорт CSV / Excel</li>
+          <li>История изменений</li>
+          <li>Умная дедупликация (ML)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
