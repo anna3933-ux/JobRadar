@@ -1,5 +1,5 @@
 import { Link, useLocation, Outlet } from 'react-router-dom';
-import { LayoutDashboard, LayoutGrid, List, Settings, FileText, Crosshair } from 'lucide-react';
+import { LayoutDashboard, List, Settings, FileText, Crosshair } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
