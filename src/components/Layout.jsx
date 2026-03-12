@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 
 const navItems = [
   { path: '/Dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { path: '/VacanciesKanban', label: 'Kanban', icon: Kanban },
+  { path: '/VacanciesKanban', label: 'Kanban', icon: LayoutGrid },
   { path: '/VacanciesList', label: 'Вакансии', icon: List },
   { path: '/SearchSettings', label: 'Настройки поиска', icon: Settings },
   { path: '/ScraperLogs', label: 'Логи скрапера', icon: FileText },
