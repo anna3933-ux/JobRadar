@@ -15,8 +15,14 @@ async function hhFetch(url, headers) {
   log('info', `→ HH.RU REQUEST`, { url, headers });
   const res = await fetch(url, { headers });
   const responseHeaders = Object.fromEntries(res.headers.entries());
-  const body = await res.json().catch(() => null);
-  log('info', `← HH.RU RESPONSE status=${res.status}`, { responseHeaders, body });
+  const rawText = await res.text();
+  let body = null;
+  try { body = JSON.parse(rawText); } catch (_) { body = rawText; }
+  if (!res.ok) {
+    log('error', `← HH.RU RESPONSE ERROR status=${res.status}`, { responseHeaders, body });
+  } else {
+    log('info', `← HH.RU RESPONSE status=${res.status} items=${body?.found ?? body?.items?.length ?? '?'}`, { pages: body?.pages, per_page: body?.per_page });
+  }
   return { ok: res.ok, status: res.status, body };
 }
 
