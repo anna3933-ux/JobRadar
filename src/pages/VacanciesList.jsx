@@ -9,6 +9,22 @@ import { format } from 'date-fns';
 
 export default function VacanciesList() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [scraping, setScraping] = useState(false);
+
+  const runScrape = async () => {
+    setScraping(true);
+    try {
+      const res = await base44.functions.invoke('scrapeVacancies', {});
+      toast.success(res.data?.message || 'Сканирование запущено');
+      queryClient.invalidateQueries({ queryKey: ['vacancies'] });
+      queryClient.invalidateQueries({ queryKey: ['scraperLogs'] });
+    } catch (e) {
+      toast.error('Ошибка запуска сканирования');
+    }
+    setScraping(false);
+  };
+
   const { data: vacancies = [], isLoading } = useQuery({
     queryKey: ['vacancies'],
     queryFn: () => base44.entities.Vacancy.list('-created_date', 500),
