@@ -19,7 +19,7 @@ export default function Layout() {
         <div className="p-5 border-b border-gray-100">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-[#6c63ff] flex items-center justify-center shadow-sm">
-              <Radar className="w-4 h-4 text-white" />
+              <Crosshair className="w-4 h-4 text-white" />
             </div>
             <span className="font-bold text-gray-900 text-lg tracking-tight">JobRadar</span>
           </div>
