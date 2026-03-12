@@ -6,9 +6,9 @@ import { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import Layout from "@/components/Layout";
 import Dashboard from "@/pages/Dashboard.jsx";
-import VacanciesList from "@/pages/VacanciesList";
-import VacancyDetail from "@/pages/VacancyDetail";
-import SearchSettings from "@/pages/SearchSettings";
+import VacanciesList from "@/pages/VacanciesList.jsx";
+import VacancyDetail from "@/pages/VacancyDetail.jsx";
+import SearchSettings from "@/pages/SearchSettings.jsx";
 import ScraperLogs from "@/pages/ScraperLogs.jsx";
 
 const queryClient = new QueryClient();
