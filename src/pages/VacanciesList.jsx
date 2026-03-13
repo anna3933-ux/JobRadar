@@ -69,6 +69,8 @@ export default function VacanciesList() {
     setFilterPlatforms([]);
     setFilterEmpTypes([]);
     setFilterCountries([]);
+    setFilterSpheres([]);
+    setFilterTitle('');
   };
 
   const runScraper = async () => {
