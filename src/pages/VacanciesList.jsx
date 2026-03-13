@@ -44,7 +44,7 @@ export default function VacanciesList() {
     return true;
   });
 
-  const activeFilterCount = filterPlatforms.length + filterEmpTypes.length + (salaryFrom ? 1 : 0) + (salaryTo ? 1 : 0);
+  const activeFilterCount = filterPlatforms.length + filterEmpTypes.length + filterCountries.length;
 
   const toggleChip = (arr, setArr, val) =>
     setArr(arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val]);
