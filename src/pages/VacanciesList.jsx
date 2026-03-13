@@ -10,6 +10,7 @@ import StatusBadge, { STATUS_CONFIG } from '@/components/StatusBadge';
 const STATUSES = ['all', ...Object.keys(STATUS_CONFIG)];
 const PLATFORMS = ['hh.ru', 'Хабр Карьера', 'headhunter.by', 'rabota.by', 'MyJob.ge'];
 const EMP_TYPES = ['Полная занятость', 'Частичная занятость', 'Удалённая работа', 'Стажировка', 'Проектная работа'];
+const COUNTRIES = ['Россия', 'Беларусь', 'Грузия', 'Армения', 'Узбекистан', 'Кипр', 'Казахстан'];
 
 export default function VacanciesList() {
   const queryClient = useQueryClient();
