@@ -150,7 +150,14 @@ export default function SearchSettings() {
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
           <h2 className="text-base font-semibold text-gray-900 mb-4">Отрасль компании</h2>
-          <TagInput value={form.spheres} onChange={v => set('spheres', v)} placeholder="Введите отрасль и нажмите Enter (IT, Финансы, Маркетинг...)" />
+          <div className="flex flex-wrap gap-2">
+            {SPHERES.map(s => (
+              <button key={s} type="button" onClick={() => toggleArray('spheres', s)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${form.spheres.includes(s) ? 'bg-[#6c63ff] text-white border-[#6c63ff]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#6c63ff]/50'}`}>
+                {s}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
