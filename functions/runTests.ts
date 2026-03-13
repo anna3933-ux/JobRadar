@@ -37,6 +37,15 @@ Deno.serve(async (req) => {
       if (!Array.isArray(config.keywords)) throw new Error(`keywords is ${typeof config.keywords}`);
     });
 
+    await run('SearchConfig: spheres is array or undefined', async () => {
+      const list = await base44.asServiceRole.entities.SearchConfig.list();
+      const config = list[0];
+      if (!config) throw new Error('No config');
+      if (config.spheres !== undefined && config.spheres !== null && !Array.isArray(config.spheres)) {
+        throw new Error(`spheres should be array, got ${typeof config.spheres}`);
+      }
+    });
+
     await run('Vacancy: read list', async () => {
       const list = await base44.asServiceRole.entities.Vacancy.list('-created_date', 5);
       if (!Array.isArray(list)) throw new Error('Expected array');

@@ -54,7 +54,7 @@ export default function SearchSettings() {
 
   const config = configs[0];
   const [form, setForm] = useState({
-    keywords: [], exclude_keywords: [], countries: [], platforms: [],
+    keywords: [], exclude_keywords: [], spheres: [], countries: [], platforms: [],
     employment_type: [], salary_from: '', salary_to: '', salary_currency: 'RUB',
     scan_interval_hours: 6, notify_telegram: false, notify_email: false, is_active: true,
   });
@@ -110,6 +110,11 @@ export default function SearchSettings() {
               <TagInput value={form.exclude_keywords} onChange={v => set('exclude_keywords', v)} placeholder="Введите и нажмите Enter..." />
             </div>
           </div>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+          <h2 className="text-base font-semibold text-gray-900 mb-4">Отрасль компании</h2>
+          <TagInput value={form.spheres} onChange={v => set('spheres', v)} placeholder="Введите отрасль и нажмите Enter (IT, Финансы, Маркетинг...)" />
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">

@@ -132,6 +132,7 @@ Deno.serve(async (req) => {
     const excludeKeywords = config.exclude_keywords || [];
     const countries = config.countries || [];
     const empTypes = config.employment_type || [];
+    const spheres = config.spheres || [];
 
     if (keywords.length === 0) {
       log('warn', 'No keywords configured — aborting');
@@ -204,8 +205,13 @@ Deno.serve(async (req) => {
     for (const keyword of keywords) {
       log('info', `──── Keyword: "${keyword}" ────`);
 
+      // Append sphere/industry names to query text for better filtering
+      const searchText = spheres.length > 0
+        ? `${keyword} (${spheres.join(' OR ')})`
+        : keyword;
+
       const params = new URLSearchParams({
-        text: keyword,
+        text: searchText,
         per_page: '100',
         page: '0',
         order_by: 'publication_time',
