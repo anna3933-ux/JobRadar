@@ -139,7 +139,7 @@ export default function VacanciesList() {
       {showFilters && (
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-4 mb-4 space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-gray-700">Расширенные фильтры</span>
+            <span className="text-sm font-semibold text-gray-700">Фильтры</span>
             {activeFilterCount > 0 && (
               <button onClick={clearFilters} className="flex items-center gap-1 text-xs text-gray-400 hover:text-red-500 transition-colors">
                 <X className="w-3 h-3" />Сбросить все
@@ -147,12 +147,23 @@ export default function VacanciesList() {
             )}
           </div>
           <div>
-            <label className="text-xs text-gray-500 uppercase tracking-wide mb-2 block">Платформа</label>
+            <label className="text-xs text-gray-500 uppercase tracking-wide mb-2 block">Источник</label>
             <div className="flex flex-wrap gap-2">
               {PLATFORMS.map(p => (
                 <button key={p} onClick={() => toggleChip(filterPlatforms, setFilterPlatforms, p)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${filterPlatforms.includes(p) ? 'bg-[#6c63ff] text-white border-[#6c63ff]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#6c63ff]/50'}`}>
                   {p}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="text-xs text-gray-500 uppercase tracking-wide mb-2 block">Страна</label>
+            <div className="flex flex-wrap gap-2">
+              {COUNTRIES.map(c => (
+                <button key={c} onClick={() => toggleChip(filterCountries, setFilterCountries, c)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${filterCountries.includes(c) ? 'bg-[#6c63ff] text-white border-[#6c63ff]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#6c63ff]/50'}`}>
+                  {c}
                 </button>
               ))}
             </div>
@@ -166,16 +177,6 @@ export default function VacanciesList() {
                   {t}
                 </button>
               ))}
-            </div>
-          </div>
-          <div>
-            <label className="text-xs text-gray-500 uppercase tracking-wide mb-2 block">Зарплата (RUB)</label>
-            <div className="flex gap-3 items-center">
-              <input type="number" placeholder="От" value={salaryFrom} onChange={e => setSalaryFrom(e.target.value)}
-                className="w-28 text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#6c63ff]" />
-              <span className="text-gray-400">—</span>
-              <input type="number" placeholder="До" value={salaryTo} onChange={e => setSalaryTo(e.target.value)}
-                className="w-28 text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#6c63ff]" />
             </div>
           </div>
         </div>
