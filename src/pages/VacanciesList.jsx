@@ -22,8 +22,7 @@ export default function VacanciesList() {
   const [showFilters, setShowFilters] = useState(false);
   const [filterPlatforms, setFilterPlatforms] = useState([]);
   const [filterEmpTypes, setFilterEmpTypes] = useState([]);
-  const [salaryFrom, setSalaryFrom] = useState('');
-  const [salaryTo, setSalaryTo] = useState('');
+  const [filterCountries, setFilterCountries] = useState([]);
 
   const { data: vacancies = [], isLoading } = useQuery({
     queryKey: ['vacancies'],
