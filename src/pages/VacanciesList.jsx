@@ -192,14 +192,12 @@ export default function VacanciesList() {
 
           <div>
             <label className="text-xs text-gray-500 uppercase tracking-wide mb-2 block">Отрасль компании</label>
-            <div className="flex flex-wrap gap-2">
-              {SPHERES.map(s => (
-                <button key={s} onClick={() => toggleChip(draftSpheres, setDraftSpheres, s)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${draftSpheres.includes(s) ? 'bg-[#6c63ff] text-white border-[#6c63ff]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#6c63ff]/50'}`}>
-                  {s}
-                </button>
-              ))}
-            </div>
+            <MultiSelectFilter
+              options={uniqueSpheres}
+              selected={draftSpheres}
+              onChange={setDraftSpheres}
+              placeholder="Выберите отрасли..."
+            />
           </div>
 
           <div>
