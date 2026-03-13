@@ -53,6 +53,7 @@ export default function VacanciesList() {
   });
 
   const uniqueTitles = [...new Set(vacancies.map(v => v.title).filter(Boolean))].sort();
+  const uniqueSpheres = [...new Set(vacancies.map(v => v.sphere).filter(Boolean))].sort();
 
   const filtered = vacancies.filter(v => {
     if (favOnly && !v.is_favorite) return false;
