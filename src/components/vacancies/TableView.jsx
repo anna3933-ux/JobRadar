@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Trash2, Star, ChevronDown } from 'lucide-react';
+import { Trash2, Star } from 'lucide-react';
 import StatusBadge, { STATUS_CONFIG } from '@/components/StatusBadge';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
