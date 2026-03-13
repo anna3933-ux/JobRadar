@@ -34,8 +34,7 @@ export default function VacanciesList() {
     if (status !== 'all' && v.status !== status) return false;
     if (filterPlatforms.length > 0 && !filterPlatforms.includes(v.source_platform)) return false;
     if (filterEmpTypes.length > 0 && !filterEmpTypes.includes(v.employment_type)) return false;
-    if (salaryFrom && (v.salary_from || v.salary_to) && (v.salary_from || 0) < Number(salaryFrom)) return false;
-    if (salaryTo && (v.salary_from || v.salary_to) && (v.salary_to || v.salary_from || 0) > Number(salaryTo)) return false;
+    if (filterCountries.length > 0 && !filterCountries.includes(v.country)) return false;
     if (search) {
       const q = search.toLowerCase();
       return (v.title || '').toLowerCase().includes(q) ||
