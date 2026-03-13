@@ -41,12 +41,16 @@ export default function VacanciesList() {
     queryFn: () => base44.entities.Vacancy.list('-created_date', 500),
   });
 
+  const uniqueTitles = [...new Set(vacancies.map(v => v.title).filter(Boolean))].sort();
+
   const filtered = vacancies.filter(v => {
     if (favOnly && !v.is_favorite) return false;
     if (status !== 'all' && v.status !== status) return false;
     if (filterPlatforms.length > 0 && !filterPlatforms.includes(v.source_platform)) return false;
     if (filterEmpTypes.length > 0 && !filterEmpTypes.includes(v.employment_type)) return false;
     if (filterCountries.length > 0 && !filterCountries.includes(v.country)) return false;
+    if (filterSpheres.length > 0 && !filterSpheres.includes(v.sphere)) return false;
+    if (filterTitle && !(v.title || '').toLowerCase().includes(filterTitle.toLowerCase())) return false;
     if (search) {
       const q = search.toLowerCase();
       return (v.title || '').toLowerCase().includes(q) ||
@@ -56,7 +60,7 @@ export default function VacanciesList() {
     return true;
   });
 
-  const activeFilterCount = filterPlatforms.length + filterEmpTypes.length + filterCountries.length;
+  const activeFilterCount = filterPlatforms.length + filterEmpTypes.length + filterCountries.length + filterSpheres.length + (filterTitle ? 1 : 0);
 
   const toggleChip = (arr, setArr, val) =>
     setArr(arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val]);
