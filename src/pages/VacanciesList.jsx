@@ -126,7 +126,7 @@ export default function VacanciesList() {
             title="Канбан"
             className={`px-3 py-2 transition-colors ${view === 'kanban' ? 'bg-[#6c63ff] text-white' : 'text-gray-500 hover:bg-gray-50'}`}
           >
-            <Kanban className="w-4 h-4" />
+            <Columns className="w-4 h-4" />
           </button>
         </div>
         <button
