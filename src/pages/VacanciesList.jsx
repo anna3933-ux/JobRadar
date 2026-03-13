@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Loader2, Search, Star, Play, RefreshCw, LayoutGrid, Columns, SlidersHorizontal, X } from 'lucide-react';
+import { Loader2, Search, Star, Play, RefreshCw, LayoutGrid, Columns, SlidersHorizontal, X, Table2 } from 'lucide-react';
 import { toast } from 'sonner';
 import VacancyCard from '@/components/VacancyCard';
 import KanbanBoard from '@/components/KanbanBoard';
 import StatusBadge, { STATUS_CONFIG } from '@/components/StatusBadge';
+import MultiSelectFilter from '@/components/vacancies/MultiSelectFilter';
+import TableView from '@/components/vacancies/TableView';
 
 const STATUSES = ['all', ...Object.keys(STATUS_CONFIG)];
 const PLATFORMS = ['hh.ru', 'Хабр Карьера', 'headhunter.by', 'rabota.by', 'MyJob.ge'];
@@ -30,11 +32,20 @@ export default function VacanciesList() {
   const [scraping, setScraping] = useState(false);
   const [view, setView] = useState('list');
   const [showFilters, setShowFilters] = useState(false);
+
+  // Draft filters (not applied yet)
+  const [draftPlatforms, setDraftPlatforms] = useState([]);
+  const [draftEmpTypes, setDraftEmpTypes] = useState([]);
+  const [draftCountries, setDraftCountries] = useState([]);
+  const [draftSpheres, setDraftSpheres] = useState([]);
+  const [draftTitles, setDraftTitles] = useState([]);
+
+  // Applied filters
   const [filterPlatforms, setFilterPlatforms] = useState([]);
   const [filterEmpTypes, setFilterEmpTypes] = useState([]);
   const [filterCountries, setFilterCountries] = useState([]);
   const [filterSpheres, setFilterSpheres] = useState([]);
-  const [filterTitle, setFilterTitle] = useState('');
+  const [filterTitles, setFilterTitles] = useState([]);
 
   const { data: vacancies = [], isLoading } = useQuery({
     queryKey: ['vacancies'],
@@ -50,7 +61,7 @@ export default function VacanciesList() {
     if (filterEmpTypes.length > 0 && !filterEmpTypes.includes(v.employment_type)) return false;
     if (filterCountries.length > 0 && !filterCountries.includes(v.country)) return false;
     if (filterSpheres.length > 0 && !filterSpheres.includes(v.sphere)) return false;
-    if (filterTitle && !(v.title || '').toLowerCase().includes(filterTitle.toLowerCase())) return false;
+    if (filterTitles.length > 0 && !filterTitles.includes(v.title)) return false;
     if (search) {
       const q = search.toLowerCase();
       return (v.title || '').toLowerCase().includes(q) ||
@@ -60,17 +71,22 @@ export default function VacanciesList() {
     return true;
   });
 
-  const activeFilterCount = filterPlatforms.length + filterEmpTypes.length + filterCountries.length + filterSpheres.length + (filterTitle ? 1 : 0);
+  const activeFilterCount = filterPlatforms.length + filterEmpTypes.length + filterCountries.length + filterSpheres.length + filterTitles.length;
 
   const toggleChip = (arr, setArr, val) =>
     setArr(arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val]);
 
+  const applyFilters = () => {
+    setFilterPlatforms(draftPlatforms);
+    setFilterEmpTypes(draftEmpTypes);
+    setFilterCountries(draftCountries);
+    setFilterSpheres(draftSpheres);
+    setFilterTitles(draftTitles);
+  };
+
   const clearFilters = () => {
-    setFilterPlatforms([]);
-    setFilterEmpTypes([]);
-    setFilterCountries([]);
-    setFilterSpheres([]);
-    setFilterTitle('');
+    setDraftPlatforms([]); setDraftEmpTypes([]); setDraftCountries([]); setDraftSpheres([]); setDraftTitles([]);
+    setFilterPlatforms([]); setFilterEmpTypes([]); setFilterCountries([]); setFilterSpheres([]); setFilterTitles([]);
   };
 
   const runScraper = async () => {
@@ -86,7 +102,7 @@ export default function VacanciesList() {
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="p-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-1">
         <h1 className="text-2xl font-bold text-gray-900">Вакансии</h1>
         <button
@@ -130,19 +146,17 @@ export default function VacanciesList() {
         </button>
         {/* View toggle */}
         <div className="flex border border-gray-200 rounded-xl overflow-hidden bg-white">
-          <button
-            onClick={() => setView('list')}
-            title="Список"
-            className={`px-3 py-2 transition-colors ${view === 'list' ? 'bg-[#6c63ff] text-white' : 'text-gray-500 hover:bg-gray-50'}`}
-          >
+          <button onClick={() => setView('list')} title="Карточки"
+            className={`px-3 py-2 transition-colors ${view === 'list' ? 'bg-[#6c63ff] text-white' : 'text-gray-500 hover:bg-gray-50'}`}>
             <LayoutGrid className="w-4 h-4" />
           </button>
-          <button
-            onClick={() => setView('kanban')}
-            title="Канбан"
-            className={`px-3 py-2 transition-colors ${view === 'kanban' ? 'bg-[#6c63ff] text-white' : 'text-gray-500 hover:bg-gray-50'}`}
-          >
+          <button onClick={() => setView('kanban')} title="Канбан"
+            className={`px-3 py-2 transition-colors ${view === 'kanban' ? 'bg-[#6c63ff] text-white' : 'text-gray-500 hover:bg-gray-50'}`}>
             <Columns className="w-4 h-4" />
+          </button>
+          <button onClick={() => setView('table')} title="Таблица"
+            className={`px-3 py-2 transition-colors ${view === 'table' ? 'bg-[#6c63ff] text-white' : 'text-gray-500 hover:bg-gray-50'}`}>
+            <Table2 className="w-4 h-4" />
           </button>
         </div>
         <button
@@ -153,72 +167,84 @@ export default function VacanciesList() {
         </button>
       </div>
 
-      {/* Extended filter panel */}
+      {/* Filter panel */}
       {showFilters && (
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-4 mb-4 space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold text-gray-700">Фильтры</span>
-            {activeFilterCount > 0 && (
+            {(draftPlatforms.length + draftEmpTypes.length + draftCountries.length + draftSpheres.length + draftTitles.length) > 0 && (
               <button onClick={clearFilters} className="flex items-center gap-1 text-xs text-gray-400 hover:text-red-500 transition-colors">
                 <X className="w-3 h-3" />Сбросить все
               </button>
             )}
           </div>
+
           <div>
             <label className="text-xs text-gray-500 uppercase tracking-wide mb-2 block">Должность</label>
-            <select
-              value={filterTitle}
-              onChange={e => setFilterTitle(e.target.value)}
-              className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:border-[#6c63ff] bg-white"
-            >
-              <option value="">Все должности</option>
-              {uniqueTitles.map(t => <option key={t} value={t}>{t}</option>)}
-            </select>
+            <MultiSelectFilter
+              options={uniqueTitles}
+              selected={draftTitles}
+              onChange={setDraftTitles}
+              placeholder="Выберите должности..."
+            />
           </div>
+
           <div>
             <label className="text-xs text-gray-500 uppercase tracking-wide mb-2 block">Отрасль компании</label>
             <div className="flex flex-wrap gap-2">
               {SPHERES.map(s => (
-                <button key={s} onClick={() => toggleChip(filterSpheres, setFilterSpheres, s)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${filterSpheres.includes(s) ? 'bg-[#6c63ff] text-white border-[#6c63ff]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#6c63ff]/50'}`}>
+                <button key={s} onClick={() => toggleChip(draftSpheres, setDraftSpheres, s)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${draftSpheres.includes(s) ? 'bg-[#6c63ff] text-white border-[#6c63ff]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#6c63ff]/50'}`}>
                   {s}
                 </button>
               ))}
             </div>
           </div>
+
           <div>
             <label className="text-xs text-gray-500 uppercase tracking-wide mb-2 block">Источник</label>
             <div className="flex flex-wrap gap-2">
               {PLATFORMS.map(p => (
-                <button key={p} onClick={() => toggleChip(filterPlatforms, setFilterPlatforms, p)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${filterPlatforms.includes(p) ? 'bg-[#6c63ff] text-white border-[#6c63ff]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#6c63ff]/50'}`}>
+                <button key={p} onClick={() => toggleChip(draftPlatforms, setDraftPlatforms, p)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${draftPlatforms.includes(p) ? 'bg-[#6c63ff] text-white border-[#6c63ff]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#6c63ff]/50'}`}>
                   {p}
                 </button>
               ))}
             </div>
           </div>
+
           <div>
             <label className="text-xs text-gray-500 uppercase tracking-wide mb-2 block">Страна</label>
             <div className="flex flex-wrap gap-2">
               {COUNTRIES.map(c => (
-                <button key={c} onClick={() => toggleChip(filterCountries, setFilterCountries, c)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${filterCountries.includes(c) ? 'bg-[#6c63ff] text-white border-[#6c63ff]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#6c63ff]/50'}`}>
+                <button key={c} onClick={() => toggleChip(draftCountries, setDraftCountries, c)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${draftCountries.includes(c) ? 'bg-[#6c63ff] text-white border-[#6c63ff]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#6c63ff]/50'}`}>
                   {c}
                 </button>
               ))}
             </div>
           </div>
+
           <div>
             <label className="text-xs text-gray-500 uppercase tracking-wide mb-2 block">Тип занятости</label>
             <div className="flex flex-wrap gap-2">
               {EMP_TYPES.map(t => (
-                <button key={t} onClick={() => toggleChip(filterEmpTypes, setFilterEmpTypes, t)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${filterEmpTypes.includes(t) ? 'bg-[#6c63ff] text-white border-[#6c63ff]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#6c63ff]/50'}`}>
+                <button key={t} onClick={() => toggleChip(draftEmpTypes, setDraftEmpTypes, t)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${draftEmpTypes.includes(t) ? 'bg-[#6c63ff] text-white border-[#6c63ff]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#6c63ff]/50'}`}>
                   {t}
                 </button>
               ))}
             </div>
           </div>
+
+          <button
+            onClick={applyFilters}
+            className="w-full py-2.5 bg-[#6c63ff] text-white text-sm font-semibold rounded-xl
+              hover:bg-[#5a52d5] active:scale-[0.98] active:bg-[#4e47c0]
+              transition-all duration-150 shadow-sm hover:shadow-md hover:shadow-[#6c63ff]/30"
+          >
+            Применить фильтрацию
+          </button>
         </div>
       )}
 
@@ -249,6 +275,8 @@ export default function VacanciesList() {
         </div>
       ) : view === 'kanban' ? (
         <KanbanBoard vacancies={filtered} />
+      ) : view === 'table' ? (
+        <TableView vacancies={filtered} />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map(v => <VacancyCard key={v.id} vacancy={v} />)}
