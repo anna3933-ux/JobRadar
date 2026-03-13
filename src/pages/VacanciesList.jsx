@@ -165,6 +165,28 @@ export default function VacanciesList() {
             )}
           </div>
           <div>
+            <label className="text-xs text-gray-500 uppercase tracking-wide mb-2 block">Должность</label>
+            <select
+              value={filterTitle}
+              onChange={e => setFilterTitle(e.target.value)}
+              className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:border-[#6c63ff] bg-white"
+            >
+              <option value="">Все должности</option>
+              {uniqueTitles.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="text-xs text-gray-500 uppercase tracking-wide mb-2 block">Отрасль компании</label>
+            <div className="flex flex-wrap gap-2">
+              {SPHERES.map(s => (
+                <button key={s} onClick={() => toggleChip(filterSpheres, setFilterSpheres, s)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${filterSpheres.includes(s) ? 'bg-[#6c63ff] text-white border-[#6c63ff]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#6c63ff]/50'}`}>
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
             <label className="text-xs text-gray-500 uppercase tracking-wide mb-2 block">Источник</label>
             <div className="flex flex-wrap gap-2">
               {PLATFORMS.map(p => (
