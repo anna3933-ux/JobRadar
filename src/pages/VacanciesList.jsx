@@ -142,7 +142,7 @@ export default function VacanciesList() {
             className={`px-3 py-2 transition-colors ${view === 'list' ? 'bg-[#6c63ff] text-white' : 'text-gray-500 hover:bg-gray-50'}`}>
             <LayoutGrid className="w-4 h-4" />
           </button>
-          <button onClick={() => setView('kanban')} title="Канбан"
+          <button onClick={() => setViewPersisted('kanban')} title="Канбан"
             className={`px-3 py-2 transition-colors ${view === 'kanban' ? 'bg-[#6c63ff] text-white' : 'text-gray-500 hover:bg-gray-50'}`}>
             <Columns className="w-4 h-4" />
           </button>
