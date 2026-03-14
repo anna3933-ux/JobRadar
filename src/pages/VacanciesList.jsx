@@ -146,7 +146,7 @@ export default function VacanciesList() {
             className={`px-3 py-2 transition-colors ${view === 'kanban' ? 'bg-[#6c63ff] text-white' : 'text-gray-500 hover:bg-gray-50'}`}>
             <Columns className="w-4 h-4" />
           </button>
-          <button onClick={() => setView('table')} title="Таблица"
+          <button onClick={() => setViewPersisted('table')} title="Таблица"
             className={`px-3 py-2 transition-colors ${view === 'table' ? 'bg-[#6c63ff] text-white' : 'text-gray-500 hover:bg-gray-50'}`}>
             <Table className="w-4 h-4" />
           </button>
