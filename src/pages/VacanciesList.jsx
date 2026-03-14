@@ -138,7 +138,7 @@ export default function VacanciesList() {
         </button>
         {/* View toggle */}
         <div className="flex border border-gray-200 rounded-xl overflow-hidden bg-white">
-          <button onClick={() => setView('list')} title="Карточки"
+          <button onClick={() => setViewPersisted('list')} title="Карточки"
             className={`px-3 py-2 transition-colors ${view === 'list' ? 'bg-[#6c63ff] text-white' : 'text-gray-500 hover:bg-gray-50'}`}>
             <LayoutGrid className="w-4 h-4" />
           </button>
