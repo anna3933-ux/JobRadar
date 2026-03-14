@@ -2,12 +2,49 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Trash2, Star } from 'lucide-react';
+import { Trash2, Star, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
 import StatusBadge, { STATUS_CONFIG } from '@/components/StatusBadge';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
 const STATUSES = Object.keys(STATUS_CONFIG);
+
+const COLUMNS = [
+  { key: 'title', label: 'Должность', minW: 'min-w-[200px]' },
+  { key: 'published_at', label: 'Дата публ.', nowrap: true },
+  { key: 'source_platform', label: 'Платформа' },
+  { key: 'country', label: 'Страна' },
+  { key: 'salary_from', label: 'Зарп. от', nowrap: true },
+  { key: 'salary_to', label: 'Зарп. до', nowrap: true },
+  { key: 'sphere', label: 'Отрасль', minW: 'min-w-[140px]' },
+  { key: 'employment_type', label: 'Занятость' },
+  { key: 'status', label: 'Статус' },
+];
+
+function SortIcon({ col, sortCol, sortDir }) {
+  if (sortCol !== col) return <ChevronsUpDown className="w-3 h-3 text-gray-300 inline ml-1" />;
+  return sortDir === 'asc'
+    ? <ChevronUp className="w-3 h-3 text-[#6c63ff] inline ml-1" />
+    : <ChevronDown className="w-3 h-3 text-[#6c63ff] inline ml-1" />;
+}
+
+function sortVacancies(vacancies, col, dir) {
+  if (!col) return vacancies;
+  return [...vacancies].sort((a, b) => {
+    let va = a[col];
+    let vb = b[col];
+    if (va == null) va = '';
+    if (vb == null) vb = '';
+    if (typeof va === 'number' && typeof vb === 'number') {
+      return dir === 'asc' ? va - vb : vb - va;
+    }
+    va = String(va).toLowerCase();
+    vb = String(vb).toLowerCase();
+    if (va < vb) return dir === 'asc' ? -1 : 1;
+    if (va > vb) return dir === 'asc' ? 1 : -1;
+    return 0;
+  });
+}
 
 export default function TableView({ vacancies }) {
   const navigate = useNavigate();
@@ -15,12 +52,21 @@ export default function TableView({ vacancies }) {
   const [selected, setSelected] = useState([]);
   const [bulkStatus, setBulkStatus] = useState('');
   const [bulkLoading, setBulkLoading] = useState(false);
+  const [sortCol, setSortCol] = useState('published_at');
+  const [sortDir, setSortDir] = useState('desc');
+
+  const sorted = sortVacancies(vacancies, sortCol, sortDir);
 
   const allChecked = vacancies.length > 0 && selected.length === vacancies.length;
   const someChecked = selected.length > 0 && !allChecked;
 
   const toggleAll = () => setSelected(allChecked ? [] : vacancies.map(v => v.id));
   const toggleOne = (id) => setSelected(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
+
+  const handleSort = (col) => {
+    if (sortCol === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    else { setSortCol(col); setSortDir('asc'); }
+  };
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['vacancies'] });
 
@@ -45,11 +91,12 @@ export default function TableView({ vacancies }) {
   };
 
   const bulkDelete = async () => {
-    if (!window.confirm(`Удалить ${selected.length} вакансий?`)) return;
+    const count = selected.length;
+    const toDelete = [...selected];
     setBulkLoading(true);
-    await Promise.all(selected.map(id => base44.entities.Vacancy.delete(id)));
-    toast.success(`Удалено: ${selected.length}`);
     setSelected([]);
+    await Promise.all(toDelete.map(id => base44.entities.Vacancy.delete(id)));
+    toast.success(`Удалено: ${count}`);
     invalidate();
     setBulkLoading(false);
   };
@@ -113,20 +160,21 @@ export default function TableView({ vacancies }) {
                     className="accent-[#6c63ff] cursor-pointer"
                   />
                 </th>
-                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide min-w-[200px]">Должность</th>
-                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">Дата публ.</th>
-                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Платформа</th>
-                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Страна</th>
-                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">Зарп. от</th>
-                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">Зарп. до</th>
-                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide min-w-[140px]">Отрасль</th>
-                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Занятость</th>
-                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Статус</th>
+                {COLUMNS.map(col => (
+                  <th
+                    key={col.key}
+                    onClick={() => handleSort(col.key)}
+                    className={`px-3 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide cursor-pointer hover:text-gray-800 select-none ${col.minW || ''} ${col.nowrap ? 'whitespace-nowrap' : ''}`}
+                  >
+                    {col.label}
+                    <SortIcon col={col.key} sortCol={sortCol} sortDir={sortDir} />
+                  </th>
+                ))}
                 <th className="px-3 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide min-w-[120px]">Заметки</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {vacancies.map(v => (
+              {sorted.map(v => (
                 <tr
                   key={v.id}
                   className={`hover:bg-gray-50/70 transition-colors ${selected.includes(v.id) ? 'bg-[#6c63ff]/5' : ''}`}
@@ -144,20 +192,14 @@ export default function TableView({ vacancies }) {
                     <div className="flex items-center gap-1.5">
                       {v.is_favorite && <Star className="w-3 h-3 text-yellow-400 fill-yellow-400 shrink-0" />}
                       {v.source_url ? (
-                        <a
-                          href={v.source_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                        <a href={v.source_url} target="_blank" rel="noopener noreferrer"
                           className="text-[#6c63ff] hover:underline font-medium line-clamp-2"
-                          onClick={e => e.stopPropagation()}
-                        >
+                          onClick={e => e.stopPropagation()}>
                           {v.title}
                         </a>
                       ) : (
-                        <button
-                          onClick={() => navigate(`/VacancyDetail?id=${v.id}`)}
-                          className="text-gray-900 hover:text-[#6c63ff] font-medium text-left line-clamp-2 transition-colors"
-                        >
+                        <button onClick={() => navigate(`/VacancyDetail?id=${v.id}`)}
+                          className="text-gray-900 hover:text-[#6c63ff] font-medium text-left line-clamp-2 transition-colors">
                           {v.title}
                         </button>
                       )}
@@ -179,9 +221,7 @@ export default function TableView({ vacancies }) {
                     <span className="line-clamp-2">{v.sphere || '—'}</span>
                   </td>
                   <td className="px-3 py-3 text-xs text-gray-600">{v.employment_type || '—'}</td>
-                  <td className="px-3 py-3">
-                    <StatusBadge status={v.status} />
-                  </td>
+                  <td className="px-3 py-3"><StatusBadge status={v.status} /></td>
                   <td className="px-3 py-3 text-xs text-gray-500 max-w-[120px]">
                     <span className="line-clamp-2">{v.notes || '—'}</span>
                   </td>

@@ -20,7 +20,8 @@ export default function VacanciesList() {
   const [status, setStatus] = useState('all');
   const [favOnly, setFavOnly] = useState(false);
   const [scraping, setScraping] = useState(false);
-  const [view, setView] = useState('list');
+  const [view, setView] = useState(() => localStorage.getItem('vacanciesView') || 'table');
+  const setViewPersisted = (v) => { localStorage.setItem('vacanciesView', v); setView(v); };
   const [showFilters, setShowFilters] = useState(false);
 
   // Draft filters (not applied yet)
