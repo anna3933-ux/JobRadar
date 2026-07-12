@@ -1,0 +1,28 @@
+{
+  "type": "object",
+  "properties": {
+    "url": {
+      "type": "string"
+    },
+    "is_active": {
+      "type": "boolean"
+    },
+    "last_ok": {
+      "type": "boolean"
+    },
+    "last_checked_at": {
+      "type": "string"
+    },
+    "down_since": {
+      "type": "string"
+    },
+    "check_interval_minutes": {
+      "type": "number"
+    },
+    "timeout_seconds": {
+      "type": "number"
+    }
+  },
+  "required": [],
+  "name": "MonitoredSite"
+}
