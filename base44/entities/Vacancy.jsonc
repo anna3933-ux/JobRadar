@@ -1,0 +1,76 @@
+{
+  "name": "Vacancy",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "company": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "salary_from": {
+      "type": "number"
+    },
+    "salary_to": {
+      "type": "number"
+    },
+    "currency": {
+      "type": "string",
+      "default": "RUB"
+    },
+    "source_platform": {
+      "type": "string"
+    },
+    "source_url": {
+      "type": "string"
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date"
+    },
+    "description": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "viewed",
+        "applied",
+        "interview",
+        "offer",
+        "rejected",
+        "archived"
+      ],
+      "default": "new"
+    },
+    "is_favorite": {
+      "type": "boolean",
+      "default": false
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "string"
+    },
+    "hash": {
+      "type": "string"
+    },
+    "employment_type": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title"
+  ]
+}

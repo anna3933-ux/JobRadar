@@ -1,0 +1,76 @@
+{
+  "name": "SearchConfig",
+  "type": "object",
+  "properties": {
+    "keywords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "exclude_keywords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "spheres": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "\u041e\u0442\u0440\u0430\u0441\u043b\u0438 \u043a\u043e\u043c\u043f\u0430\u043d\u0438\u0438 (IT, \u0424\u0438\u043d\u0430\u043d\u0441\u044b, \u041c\u0430\u0440\u043a\u0435\u0442\u0438\u043d\u0433 \u0438 \u0442.\u0434.)"
+    },
+    "countries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "platforms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "employment_type": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "salary_from": {
+      "type": "number"
+    },
+    "salary_to": {
+      "type": "number"
+    },
+    "salary_currency": {
+      "type": "string",
+      "default": "RUB"
+    },
+    "scan_interval_hours": {
+      "type": "number",
+      "default": 6
+    },
+    "notify_telegram": {
+      "type": "boolean",
+      "default": false
+    },
+    "telegram_bot_token": {
+      "type": "string"
+    },
+    "telegram_chat_id": {
+      "type": "string"
+    },
+    "notify_email": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": []
+}

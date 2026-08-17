@@ -1,0 +1,34 @@
+{
+  "name": "ScraperLog",
+  "type": "object",
+  "properties": {
+    "started_at": {
+      "type": "string"
+    },
+    "finished_at": {
+      "type": "string"
+    },
+    "platform": {
+      "type": "string"
+    },
+    "total_found": {
+      "type": "number"
+    },
+    "new_added": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "success",
+        "error",
+        "running"
+      ],
+      "default": "running"
+    },
+    "error_message": {
+      "type": "string"
+    }
+  },
+  "required": []
+}
