@@ -1,0 +1,40 @@
+{
+  "name": "JobRadar \u2014 \u0410\u0432\u0442\u043e\u0441\u043a\u0440\u0430\u043f\u0438\u043d\u0433 \u0432\u0430\u043a\u0430\u043d\u0441\u0438\u0439",
+  "description": "I will run the scrape_vacancies skill to collect new job vacancies from hh.ru and Habr Career based on the SearchConfig settings, save new ones to the Vacancy entity, and send a Telegram notification to Ilya with the count of new vacancies found.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "interval",
+      "cron_expression": null,
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": 6,
+      "interval_unit": "hours",
+      "interval_anchor": "2026-03-12T17:29:35.620000",
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "jobradar",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_agent_step": {
+          "call": "invoke_superagent_step",
+          "with": {
+            "message": "[Scheduled task triggered: JobRadar \u2014 \u0410\u0432\u0442\u043e\u0441\u043a\u0440\u0430\u043f\u0438\u043d\u0433 \u0432\u0430\u043a\u0430\u043d\u0441\u0438\u0439]\nDescription: I will run the scrape_vacancies skill to collect new job vacancies from hh.ru and Habr Career based on the SearchConfig settings, save new ones to the Vacancy entity, and send a Telegram notification to Ilya with the count of new vacancies found."
+          },
+          "then": "end"
+        }
+      }
+    ]
+  }
+}
